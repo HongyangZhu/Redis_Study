@@ -1,10 +1,31 @@
-# Redis 配置文件
+# 1. Redis 配置文件
 
-[TOC]
+- [1. Redis 配置文件](#1-redis-配置文件)
+  - [1.1. INCLUDES 包含](#11-includes-包含)
+  - [1.2. MODULES 模块](#12-modules-模块)
+  - [1.3. NETWORK 网络](#13-network-网络)
+  - [1.4. TLS/SSL](#14-tlsssl)
+  - [1.5. GENERAL 通用](#15-general-通用)
+  - [1.6. SNAPSHOTTING 快照](#16-snapshotting-快照)
+  - [1.7. REPLICATION 复制](#17-replication-复制)
+  - [1.8. KEYS TRACKING KEYS 跟踪](#18-keys-tracking-keys-跟踪)
+  - [1.9. SECURITY 安全](#19-security-安全)
+  - [1.10. CLIENTS 客户端](#110-clients-客户端)
+  - [1.11. MEMORY MANAGEMENT 内存管理](#111-memory-management-内存管理)
+  - [1.12. LAZY FREEING](#112-lazy-freeing)
+  - [1.13. THREADED I/O](#113-threaded-io)
+  - [1.14. APPEND ONLY MODE](#114-append-only-mode)
+  - [1.15. LUA SCRIPTING](#115-lua-scripting)
+  - [1.16. REDIS CLUSTER](#116-redis-cluster)
+  - [1.17. CLUSTER DOCKER/NAT support](#117-cluster-dockernat-support)
+  - [1.18. SLOW LOG](#118-slow-log)
+  - [1.19. LATENCY MONITOR](#119-latency-monitor)
+  - [1.20. EVENT NOTIFICATION](#120-event-notification)
+  - [1.21. GOPHER SERVER](#121-gopher-server)
+  - [1.22. ADVANCED CONFIG](#122-advanced-config)
+  - [1.23. ACTIVE DEFRAGMENTATION](#123-active-defragmentation)
 
-
-
-## INCLUDES  包含
+## 1.1. INCLUDES 包含
 
 ```properties
 ################################## INCLUDES  包含 ###################################
@@ -36,7 +57,7 @@
 # include /path/to/other.conf
 ```
 
-## MODULES  模块
+## 1.2. MODULES 模块
 
 ```properties
 ################################## MODULES  模块 #####################################
@@ -50,7 +71,7 @@
 # loadmodule /path/to/other_module.so
 ```
 
-## NETWORK 网络
+## 1.3. NETWORK 网络
 
 ```properties
 ################################## NETWORK 网络 #####################################
@@ -79,7 +100,7 @@
 # 因此，默认情况下，我们取消注释下面的bind指令，
 # 这将强制Redis只监听IPv4环回接口地址
 # （这意味着Redis只能接受来自运行在同一台计算机上的客户端的连接）。
-# 
+#
 #
 # IF YOU ARE SURE YOU WANT YOUR INSTANCE TO LISTEN TO ALL THE INTERFACES
 # JUST COMMENT THE FOLLOWING LINE.
@@ -141,32 +162,118 @@ tcp-backlog 511
 # Specify the path for the Unix socket that will be used to listen for
 # incoming connections. There is no default, so Redis will not listen
 # on a unix socket when not specified.
+# 指定将用于侦听传入连接的Unix套接字的路径。
+# 没有默认值，因此未指定时，Redis将不会侦听unix套接字
 #
 # unixsocket /tmp/redis.sock
 # unixsocketperm 700
 
 # Close the connection after a client is idle for N seconds (0 to disable)
+# 在客户端空闲N秒后关闭连接（0表示禁用）
 timeout 0
 
 # TCP keepalive.
 #
 # If non-zero, use SO_KEEPALIVE to send TCP ACKs to clients in absence
 # of communication. This is useful for two reasons:
+# #如果不为零，请使用 SO_KEEPALIVE 在没有通信的情况下向客户端发送TCP ack。
+# 这有两个原因：
 #
 # 1) Detect dead peers.
+# 1） 检测死机。
 # 2) Take the connection alive from the point of view of network
 #    equipment in the middle.
+# 2）从中间网络设备的角度进行连接。
 #
 # On Linux, the specified value (in seconds) is the period used to send ACKs.
 # Note that to close the connection the double of the time is needed.
 # On other kernels the period depends on the kernel configuration.
+# 在Linux上，指定的值（以秒为单位）是用于发送确认的周期。
+# 请注意，要关闭连接，需要加倍的时间。
+# 在其他内核上，周期取决于内核配置
 #
 # A reasonable value for this option is 300 seconds, which is the new
 # Redis default starting with Redis 3.2.1.
+# 此选项的合理值为300秒，
+# 这是从Redis 3.2.1开始的新Redis默认值。
 tcp-keepalive 300
 ```
 
-GENERAL 通用
+## 1.4. TLS/SSL
+
+```properties
+################################# TLS/SSL #####################################
+
+# By default, TLS/SSL is disabled. To enable it, the "tls-port" configuration
+# directive can be used to define TLS-listening ports. To enable TLS on the
+# default port, use:
+#
+# port 0
+# tls-port 6379
+
+# Configure a X.509 certificate and private key to use for authenticating the
+# server to connected clients, masters or cluster peers.  These files should be
+# PEM formatted.
+#
+# tls-cert-file redis.crt
+# tls-key-file redis.key
+
+# Configure a DH parameters file to enable Diffie-Hellman (DH) key exchange:
+#
+# tls-dh-params-file redis.dh
+
+# Configure a CA certificate(s) bundle or directory to authenticate TLS/SSL
+# clients and peers.  Redis requires an explicit configuration of at least one
+# of these, and will not implicitly use the system wide configuration.
+#
+# tls-ca-cert-file ca.crt
+# tls-ca-cert-dir /etc/ssl/certs
+
+# By default, clients (including replica servers) on a TLS port are required
+# to authenticate using valid client side certificates.
+#
+# It is possible to disable authentication using this directive.
+#
+# tls-auth-clients no
+
+# By default, a Redis replica does not attempt to establish a TLS connection
+# with its master.
+#
+# Use the following directive to enable TLS on replication links.
+#
+# tls-replication yes
+
+# By default, the Redis Cluster bus uses a plain TCP connection. To enable
+# TLS for the bus protocol, use the following directive:
+#
+# tls-cluster yes
+
+# Explicitly specify TLS versions to support. Allowed values are case insensitive
+# and include "TLSv1", "TLSv1.1", "TLSv1.2", "TLSv1.3" (OpenSSL >= 1.1.1) or
+# any combination. To enable only TLSv1.2 and TLSv1.3, use:
+#
+# tls-protocols "TLSv1.2 TLSv1.3"
+
+# Configure allowed ciphers.  See the ciphers(1ssl) manpage for more information
+# about the syntax of this string.
+#
+# Note: this configuration applies only to <= TLSv1.2.
+#
+# tls-ciphers DEFAULT:!MEDIUM
+
+# Configure allowed TLSv1.3 ciphersuites.  See the ciphers(1ssl) manpage for more
+# information about the syntax of this string, and specifically for TLSv1.3
+# ciphersuites.
+#
+# tls-ciphersuites TLS_CHACHA20_POLY1305_SHA256
+
+# When choosing a cipher, use the server's preference instead of the client
+# preference. By default, the server follows the client's preference.
+#
+# tls-prefer-server-ciphers yes
+```
+
+## 1.5. GENERAL 通用
 
 ```properties
 ################################# GENERAL 通用 #####################################
@@ -242,9 +349,9 @@ databases 16 # 默认的数据库数量为：16
 always-show-logo yes # 是否显示Redis的Logo 默认：yes
 ```
 
-## SNAPSHOTTING 快照
+## 1.6. SNAPSHOTTING 快照
 
-``` properties
+```properties
 ################################ SNAPSHOTTING 快照 ################################
 # 概述：持久化，在规定的时间内，执行了多少次操作，则会持久化到文件（.rdb/.aof）
 # Redis是基于内存的数据库，如果没有持久化，那么数据断电及失
@@ -340,136 +447,9 @@ rdb-del-sync-files no
 dir ./ # RDB文件保存的目录
 ```
 
-##  CLIENTS 客户端
+## 1.7. REPLICATION 复制
 
 ```properties
-################################### CLIENTS 客户端 ####################################
-
-# Set the max number of connected clients at the same time. By default
-# this limit is set to 10000 clients, however if the Redis server is not
-# able to configure the process file limit to allow for the specified limit
-# the max number of allowed clients is set to the current file limit
-# minus 32 (as Redis reserves a few file descriptors for internal uses).
-# 设置同时连接的客户端的最大数量。
-# 默认情况下，此限制设置为10000个客户端，
-# 但是如果Redis服务器无法配置进程文件限制以允许指定的限制，
-# 则允许的最大客户端数将设置为当前文件限制减去32
-# （因为Redis保留了一些文件描述符供内部使用）。
-#
-# Once the limit is reached Redis will close all the new connections sending
-# an error 'max number of clients reached'.
-# 一旦达到限制，Redis将关闭所有新连接，
-# 并发送错误“max number of clients reached”。
-#
-# maxclients 10000
-```
-
-
-
-
-
-``` properties
-# Redis configuration file example.
-# Redis配置文件示例。
-# 
-# Note that in order to read the configuration file, Redis must be
-# started with the file path as first argument:
-# 请注意，为了读取配置文件，Redis必须以文件路径作为第一个参数启动：
-# 例如：
-# ./redis-server /path/to/redis.conf
-
-# Note on units: when memory size is needed, it is possible to specify
-# 关于单位的注释：当需要内存大小时，可以指定
-# it in the usual form of 1k 5GB 4M and so forth:
-# 通常的形式是1k 5GB 4M等等：
-# 
-# 1k => 1000 bytes
-# 1kb => 1024 bytes
-# 1m => 1000000 bytes
-# 1mb => 1024*1024 bytes
-# 1g => 1000000000 bytes
-# 1gb => 1024*1024*1024 bytes
-# 
-# 
-# units are case insensitive so 1GB 1Gb 1gB are all the same.
-# 单元不区分大小写，因此1GB 1Gb 1gB都是相同的。
-
-
-
-################################# TLS/SSL #####################################
-
-# By default, TLS/SSL is disabled. To enable it, the "tls-port" configuration
-# directive can be used to define TLS-listening ports. To enable TLS on the
-# default port, use:
-#
-# port 0
-# tls-port 6379
-
-# Configure a X.509 certificate and private key to use for authenticating the
-# server to connected clients, masters or cluster peers.  These files should be
-# PEM formatted.
-#
-# tls-cert-file redis.crt 
-# tls-key-file redis.key
-
-# Configure a DH parameters file to enable Diffie-Hellman (DH) key exchange:
-#
-# tls-dh-params-file redis.dh
-
-# Configure a CA certificate(s) bundle or directory to authenticate TLS/SSL
-# clients and peers.  Redis requires an explicit configuration of at least one
-# of these, and will not implicitly use the system wide configuration.
-#
-# tls-ca-cert-file ca.crt
-# tls-ca-cert-dir /etc/ssl/certs
-
-# By default, clients (including replica servers) on a TLS port are required
-# to authenticate using valid client side certificates.
-#
-# It is possible to disable authentication using this directive.
-#
-# tls-auth-clients no
-
-# By default, a Redis replica does not attempt to establish a TLS connection
-# with its master.
-#
-# Use the following directive to enable TLS on replication links.
-#
-# tls-replication yes
-
-# By default, the Redis Cluster bus uses a plain TCP connection. To enable
-# TLS for the bus protocol, use the following directive:
-#
-# tls-cluster yes
-
-# Explicitly specify TLS versions to support. Allowed values are case insensitive
-# and include "TLSv1", "TLSv1.1", "TLSv1.2", "TLSv1.3" (OpenSSL >= 1.1.1) or
-# any combination. To enable only TLSv1.2 and TLSv1.3, use:
-#
-# tls-protocols "TLSv1.2 TLSv1.3"
-
-# Configure allowed ciphers.  See the ciphers(1ssl) manpage for more information
-# about the syntax of this string.
-#
-# Note: this configuration applies only to <= TLSv1.2.
-#
-# tls-ciphers DEFAULT:!MEDIUM
-
-# Configure allowed TLSv1.3 ciphersuites.  See the ciphers(1ssl) manpage for more
-# information about the syntax of this string, and specifically for TLSv1.3
-# ciphersuites.
-#
-# tls-ciphersuites TLS_CHACHA20_POLY1305_SHA256
-
-# When choosing a cipher, use the server's preference instead of the client
-# preference. By default, the server follows the client's preference.
-#
-# tls-prefer-server-ciphers yes
-
-
-
-
-
 ################################# REPLICATION 复制 #################################
 
 # Master-Replica replication. Use replicaof to make a Redis instance a copy of
@@ -733,7 +713,11 @@ replica-priority 100
 #
 # replica-announce-ip 5.5.5.5
 # replica-announce-port 1234
+```
 
+## 1.8. KEYS TRACKING KEYS 跟踪
+
+```properties
 ############################### KEYS TRACKING KEYS 跟踪 #################################
 
 # Redis implements server assisted support for client side caching of values.
@@ -769,7 +753,11 @@ replica-priority 100
 # in the server side so this setting is useless.
 #
 # tracking-table-max-keys 1000000
+```
 
+## 1.9. SECURITY 安全
+
+```properties
 ################################## SECURITY 安全 ###################################
 
 # Warning: since Redis is pretty fast an outside user can try up to
@@ -869,7 +857,7 @@ replica-priority 100
 # ACL LOG
 #
 # The ACL Log tracks failed commands and authentication events associated
-# with ACLs. The ACL Log is useful to troubleshoot failed commands blocked 
+# with ACLs. The ACL Log is useful to troubleshoot failed commands blocked
 # by ACLs. The ACL Log is stored in and consumes memory. There is no limit
 # to its length.You can reclaim memory with ACL LOG RESET or set a maximum
 # length below.
@@ -919,8 +907,35 @@ requirepass 7lsysdata7 # 设置Redis的密码
 #
 # Please note that changing the name of commands that are logged into the
 # AOF file or transmitted to replicas may cause problems.
+```
 
+## 1.10. CLIENTS 客户端
 
+```properties
+################################### CLIENTS 客户端 ####################################
+
+# Set the max number of connected clients at the same time. By default
+# this limit is set to 10000 clients, however if the Redis server is not
+# able to configure the process file limit to allow for the specified limit
+# the max number of allowed clients is set to the current file limit
+# minus 32 (as Redis reserves a few file descriptors for internal uses).
+# 设置同时连接的客户端的最大数量。
+# 默认情况下，此限制设置为10000个客户端，
+# 但是如果Redis服务器无法配置进程文件限制以允许指定的限制，
+# 则允许的最大客户端数将设置为当前文件限制减去32
+# （因为Redis保留了一些文件描述符供内部使用）。
+#
+# Once the limit is reached Redis will close all the new connections sending
+# an error 'max number of clients reached'.
+# 一旦达到限制，Redis将关闭所有新连接，
+# 并发送错误“max number of clients reached”。
+#
+# maxclients 10000
+```
+
+## 1.11. MEMORY MANAGEMENT 内存管理
+
+```properties
 ############################## MEMORY MANAGEMENT 内存管理 ################################
 
 # Set a memory usage limit to the specified amount of bytes.
@@ -1034,7 +1049,11 @@ requirepass 7lsysdata7 # 设置Redis的密码
 # in the system. It's a tradeoff betweeen memory, CPU and latecy.
 #
 # active-expire-effort 1
+```
 
+## 1.12. LAZY FREEING
+
+```properties
 ############################# LAZY FREEING ####################################
 
 # Redis has two primitives to delete keys. One is called DEL and is a blocking
@@ -1090,7 +1109,11 @@ replica-lazy-flush no
 # directive:
 
 lazyfree-lazy-user-del no
+```
 
+## 1.13. THREADED I/O
+
+```properties
 ################################ THREADED I/O #################################
 
 # Redis is mostly single threaded, however there are certain threaded
@@ -1136,7 +1159,11 @@ lazyfree-lazy-user-del no
 # sure you also run the benchmark itself in threaded mode, using the
 # --threads option to match the number of Redis theads, otherwise you'll not
 # be able to notice the improvements.
+```
 
+## 1.14. APPEND ONLY MODE
+
+```properties
 ############################## APPEND ONLY MODE ###############################
 
 # By default Redis asynchronously dumps the dataset on disk. This mode is
@@ -1285,7 +1312,11 @@ aof-load-truncated yes
 # string and loads the prefixed RDB file, and continues loading the AOF
 # tail.
 aof-use-rdb-preamble yes
+```
 
+## 1.15. LUA SCRIPTING
+
+```properties
 ################################ LUA SCRIPTING  ###############################
 
 # Max execution time of a Lua script in milliseconds.
@@ -1303,7 +1334,11 @@ aof-use-rdb-preamble yes
 #
 # Set it to 0 or a negative value for unlimited execution without warnings.
 lua-time-limit 5000
+```
 
+## 1.16. REDIS CLUSTER
+
+```properties
 ################################ REDIS CLUSTER  ###############################
 
 # Normal Redis instances can't be part of a Redis Cluster; only nodes that are
@@ -1414,24 +1449,28 @@ lua-time-limit 5000
 # cluster-replica-no-failover no
 
 # This option, when set to yes, allows nodes to serve read traffic while the
-# the cluster is in a down state, as long as it believes it owns the slots. 
+# the cluster is in a down state, as long as it believes it owns the slots.
 #
-# This is useful for two cases.  The first case is for when an application 
+# This is useful for two cases.  The first case is for when an application
 # doesn't require consistency of data during node failures or network partitions.
 # One example of this is a cache, where as long as the node has the data it
-# should be able to serve it. 
+# should be able to serve it.
 #
-# The second use case is for configurations that don't meet the recommended  
-# three shards but want to enable cluster mode and scale later. A 
+# The second use case is for configurations that don't meet the recommended
+# three shards but want to enable cluster mode and scale later. A
 # master outage in a 1 or 2 shard configuration causes a read/write outage to the
 # entire cluster without this option set, with it set there is only a write outage.
-# Without a quorum of masters, slot ownership will not change automatically. 
+# Without a quorum of masters, slot ownership will not change automatically.
 #
 # cluster-allow-reads-when-down no
 
 # In order to setup your cluster make sure to read the documentation
 # available at http://redis.io web site.
+```
 
+## 1.17. CLUSTER DOCKER/NAT support
+
+```properties
 ########################## CLUSTER DOCKER/NAT support  ########################
 
 # In certain deployments, Redis Cluster nodes address discovery fails, because
@@ -1464,7 +1503,11 @@ lua-time-limit 5000
 # cluster-announce-ip 10.1.1.5
 # cluster-announce-port 6379
 # cluster-announce-bus-port 6380
+```
 
+## 1.18. SLOW LOG
+
+```properties
 ################################## SLOW LOG ###################################
 
 # The Redis Slow Log is a system to log queries that exceeded a specified
@@ -1488,7 +1531,11 @@ slowlog-log-slower-than 10000
 # There is no limit to this length. Just be aware that it will consume memory.
 # You can reclaim memory used by the slow log with SLOWLOG RESET.
 slowlog-max-len 128
+```
 
+## 1.19. LATENCY MONITOR
+
+```properties
 ################################ LATENCY MONITOR ##############################
 
 # The Redis latency monitoring subsystem samples different operations
@@ -1509,7 +1556,11 @@ slowlog-max-len 128
 # monitoring can easily be enabled at runtime using the command
 # "CONFIG SET latency-monitor-threshold <milliseconds>" if needed.
 latency-monitor-threshold 0
+```
 
+## 1.20. EVENT NOTIFICATION
+
+```properties
 ############################# EVENT NOTIFICATION ##############################
 
 # Redis can notify Pub/Sub clients about events happening in the key space.
@@ -1559,7 +1610,11 @@ latency-monitor-threshold 0
 #  this feature and the feature has some overhead. Note that if you don't
 #  specify at least one of K or E, no events will be delivered.
 notify-keyspace-events ""
+```
 
+## 1.21. GOPHER SERVER
+
+```properties
 ############################### GOPHER SERVER #################################
 
 # Redis contains an implementation of the Gopher protocol, as specified in
@@ -1614,7 +1669,11 @@ notify-keyspace-events ""
 # the option from no (the default) to yes.
 #
 # gopher-enabled no
+```
 
+## 1.22. ADVANCED CONFIG
+
+```properties
 ############################### ADVANCED CONFIG ###############################
 
 # Hashes are encoded using a memory efficient data structure when they have a
@@ -1859,7 +1918,11 @@ rdb-save-incremental-fsync yes
 #
 # lfu-log-factor 10
 # lfu-decay-time 1
+```
 
+## 1.23. ACTIVE DEFRAGMENTATION
+
+```properties
 ########################### ACTIVE DEFRAGMENTATION #######################
 #
 # What is active defragmentation?
@@ -1951,6 +2014,4 @@ jemalloc-bg-thread yes
 #
 # Set bgsave child process to cpu affinity 1,10,11
 # bgsave_cpulist 1,10-11
-
 ```
-
